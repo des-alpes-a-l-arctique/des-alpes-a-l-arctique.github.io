@@ -5,7 +5,7 @@
  * (menu Extensions → Apps Script). Mode d'emploi : README.md, « Brancher les formulaires ».
  *
  * Ce qu'il fait tout seul :
- *   • chaque don terminé sur le site (après le choix TWINT / virement) → une ligne dans l'onglet « Dons »
+ *   • chaque don terminé sur le site (après l'écran de paiement) → une ligne dans l'onglet « Dons »
  *                                      + un e-mail à l'équipe
  *                                      + un e-mail au donateur avec les infos du moyen de paiement choisi
  *   • chaque message (contact, partenariat, livre) → une ligne dans « Messages » + un e-mail à l'équipe
@@ -20,9 +20,8 @@
 // Nécessaire si le script a été créé depuis script.google.com (et non via Extensions → Apps Script).
 const ID_FEUILLE = "1UD5Vt2jzG6nsdXw2XRJv63WZCDw-a3e3Y3qUJHskf7k";
 const EQUIPE_EMAIL = "svalbardcsud@gmail.com";
-const IBAN = "";               // ex. "CH12 3456 7890 1234 5678 9"
-const TITULAIRE = "Association Des Alpes à l'Arctique";
-const LIEN_TWINT = "";         // lien de paiement TWINT de l'association
+const IBAN = "CH35 8080 8008 9065 6285 1";
+const TITULAIRE = "Association d'étudiants Des Alpes à l'Arctique";
 const OBJECTIF = 40000;        // CHF
 const SITE = "https://des-alpes-a-l-arctique.github.io/";
 const SIGNATURE = "Les neuf élèves du Collège du Sud\nDes Alpes à l'Arctique — Svalbard 2027\n" + SITE +
@@ -102,7 +101,7 @@ function doPost(e) {
         body: `${d.prenom} ${d.nom}${d.organisation ? " (" + d.organisation + ")" : ""} annonce un don de CHF ${montant}.\n\n` +
               `E-mail : ${d.email}\nType : ${d.type}\nMoyen de paiement choisi : ${d.methode || "—"}\nCommunication de paiement : ${d.reference}\n` +
               `Nom affiché sur le site : ${nomAffiche}\nMessage : ${d.message || "—"}\n\n` +
-              `Quand l'argent arrive (TWINT ou banque), mets « Payé ? » sur « oui » dans la feuille :\n` +
+              `Quand l'argent arrive (sur le relevé de la banque), mets « Payé ? » sur « oui » dans la feuille :\n` +
               `le donateur reçoit alors automatiquement un e-mail de remerciement.\n${classeur_().getUrl()}`,
       });
 
@@ -197,7 +196,7 @@ function majTableau_(ecrire = true) {
 function testerUnDon() {
   doPost({ postData: { contents: JSON.stringify({
     kind: "don", montant: 1, type: "Particulier", prenom: "Test", nom: "Essai", email: EQUIPE_EMAIL,
-    reference: "Don Svalbard 2027 – Test Essai", nomPublic: "non", methode: "TWINT",
+    reference: "Don Svalbard 2027 – Test Essai", nomPublic: "non", methode: "virement bancaire",
   }) } });
 }
 function testerUnMessage() {
@@ -212,7 +211,7 @@ function mailDonateur_(email, prenom, montant, ref, methode) {
     name: "Des Alpes à l'Arctique",
     subject: "Merci pour votre don, voici comment le finaliser — Des Alpes à l'Arctique",
     body: `Bonjour ${prenom},\n\nUn immense merci pour votre don de CHF ${montant} à notre voyage d'étude au Svalbard !\n\n` +
-          paiement_(ref, montant, methode) +
+          paiement_(ref, montant) +
           `\n\nDès que votre paiement nous parvient, nous vous envoyons une confirmation.\n\n${SIGNATURE}`,
   });
 }
@@ -221,15 +220,9 @@ function classeur_() {
   if (!ss) throw new Error("Remplissez ID_FEUILLE en haut du script (identifiant de la feuille Google Sheets).");
   return ss;
 }
-function paiement_(ref, montant, methode) {
-  const twint = LIEN_TWINT && `Par TWINT : ${LIEN_TWINT}\n(montant : CHF ${montant})`;
-  const virement = IBAN && `Par virement bancaire :\nIBAN : ${IBAN}\nTitulaire : ${TITULAIRE}\nMontant : CHF ${montant}\nCommunication : ${ref}`;
-  const choisi = /twint/i.test(methode || "") ? twint : /virement/i.test(methode || "") ? virement : null;
-  if (choisi) return "Pour finaliser votre don :\n\n" + choisi +
-    ((/twint/i.test(methode) ? virement : twint) ? "\n\nVous préférez l'autre moyen ?\n\n" + (/twint/i.test(methode) ? virement : twint) : "");
-  const l = [twint, virement].filter(Boolean);
-  return l.length ? "Pour finaliser votre don :\n\n" + l.join("\n\n")
-    : "Notre compte est en cours d'ouverture : nous vous envoyons les coordonnées de paiement très bientôt.";
+function paiement_(ref, montant) {
+  if (!IBAN) return "Notre compte est en cours d'ouverture : nous vous envoyons les coordonnées de paiement très bientôt.";
+  return `Pour finaliser votre don, par virement bancaire :\n\nIBAN : ${IBAN}\nTitulaire : ${TITULAIRE}\nMontant : CHF ${montant}\nCommunication : ${ref}`;
 }
 function feuille_(nom) {
   const ss = classeur_();

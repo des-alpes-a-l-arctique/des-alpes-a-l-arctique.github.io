@@ -1,6 +1,6 @@
 /* ==========================================================================
    Dons : fenêtre en 3 étapes + moyens de paiement
-   (TWINT, virement, carte en option).
+   (virement bancaire avec QR-facture, carte en option).
    ========================================================================== */
 window.SvalbardPay = (() => {
   const CFG = window.SITE_CONFIG || {};
@@ -28,21 +28,17 @@ window.SvalbardPay = (() => {
 
   function fillPanels(form, d) {
     const msg = `Don Svalbard 2027 – ${d.prenom} ${d.nom}`;
-    // TWINT
-    $('[data-panel="twint"]', form).innerHTML = CFG.twintLink
-      ? `<div class="pay__twint">
-          ${isPhone() ? "" : `<div class="pay__qr">${qrSvg(CFG.twintLink)}</div>`}
-          <div><p>${isPhone() ? "Ouvrez TWINT en un geste :" : "Scannez ce code avec l'app TWINT, ou ouvrez la page de paiement :"}</p>
-          <a class="btn btn--accent" href="${esc(CFG.twintLink)}" target="_blank" rel="noopener"><span>Payer CHF ${fmt(d.montant)} avec TWINT ↗</span></a>
-          <p class="pay__hint">Indiquez le montant de <b>CHF ${fmt(d.montant)}</b> si l'app vous le demande.</p></div></div>`
-      : soon("Le paiement TWINT");
-    // Virement
+    // Virement bancaire (+ QR-facture de la banque, à scanner depuis un autre appareil que celui qui affiche la page)
     $('[data-panel="virement"]', form).innerHTML = CFG.iban
-      ? `<div class="copyrows">${copyRow("IBAN", CFG.iban)}${copyRow("Bénéficiaire", CFG.accountHolder || "Association Des Alpes à l'Arctique")}${copyRow("Montant", "CHF " + Number(d.montant).toFixed(2))}${copyRow("Communication", msg)}</div>${CFG.bank ? `<p class="pay__hint">${esc(CFG.bank)}</p>` : ""}`
+      ? `<div class="copyrows">${copyRow("IBAN", CFG.iban)}${copyRow("Bénéficiaire", CFG.accountHolder || "Association d'étudiants Des Alpes à l'Arctique")}${copyRow("Montant", "CHF " + Number(d.montant).toFixed(2))}${copyRow("Communication", msg)}</div>${CFG.bank ? `<p class="pay__hint">${esc(CFG.bank)}</p>` : ""}${CFG.qrBill && !isPhone() ? `<div class="pay__qrbill"><img src="${esc(CFG.qrBill)}" alt="QR-facture de la banque" width="150" height="150"><p>Ou scannez ce code avec l'application de votre banque. Il contient l'IBAN et le bénéficiaire ; pensez à indiquer le montant de <b>CHF ${fmt(d.montant)}</b> et la communication ci-dessus.</p></div>` : ""}`
       : soon("Le virement");
     // Carte (facultatif)
     const cardTab = $('[data-tab="carte"]', form);
     cardTab.hidden = !CFG.cardLink;
+    // un seul moyen (virement) : pas d'onglets ; avec la carte en plus : deux onglets
+    $(".tabs", form).hidden = !CFG.cardLink;
+    $("[data-pay-intro]", form).textContent = CFG.cardLink ? "Comment souhaitez-vous verser votre don de" : "Voici comment verser votre don de";
+    $("[data-pay-end]", form).innerHTML = CFG.cardLink ? "&nbsp;?" : "&nbsp;par virement bancaire&nbsp;:";
     $('[data-panel="carte"]', form).innerHTML = CFG.cardLink
       ? `<p>Carte de crédit, Apple Pay ou Google Pay, sur une page de paiement sécurisée :</p><a class="btn btn--accent" href="${esc(CFG.cardLink)}" target="_blank" rel="noopener"><span>Payer par carte ↗</span></a>`
       : "";
@@ -103,7 +99,7 @@ window.SvalbardPay = (() => {
     $("[data-finish]", form).addEventListener("click", async () => {
       if (!don) return go(2);
       const tab = $(".tab.is-on", form);
-      const methode = { twint: "TWINT", virement: "virement bancaire", carte: "carte" }[tab.dataset.tab] || tab.textContent;
+      const methode = { virement: "virement bancaire", carte: "carte" }[tab.dataset.tab] || tab.textContent;
       const status = $('[data-step="3"] .form__status', form);
       const btn = $("[data-finish]", form); btn.disabled = true; status.textContent = "";
       const err = await send("don", { ...don, methode }).then(() => null, (e) => e.message);

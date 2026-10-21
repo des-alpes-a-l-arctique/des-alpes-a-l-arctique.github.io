@@ -174,14 +174,12 @@
 
       <fieldset class="step" data-step="3">
         <legend class="sr">Paiement</legend>
-        <p class="pay__lead">Merci <b data-thanks-name></b> ! Comment souhaitez-vous verser votre don de <b data-thanks-amount></b>&nbsp;?</p>
-        <div class="tabs" role="tablist">
-          <button type="button" role="tab" class="tab is-on" data-tab="twint">TWINT</button>
-          <button type="button" role="tab" class="tab" data-tab="virement">Virement</button>
+        <p class="pay__lead">Merci <b data-thanks-name></b> ! <span data-pay-intro>Voici comment verser votre don de</span> <b data-thanks-amount></b><span data-pay-end>&nbsp;par virement bancaire&nbsp;:</span></p>
+        <div class="tabs" role="tablist" hidden>
+          <button type="button" role="tab" class="tab is-on" data-tab="virement">Virement</button>
           <button type="button" role="tab" class="tab" data-tab="carte" hidden>Carte</button>
         </div>
-        <div class="panel is-on" data-panel="twint"></div>
-        <div class="panel" data-panel="virement"></div>
+        <div class="panel is-on" data-panel="virement"></div>
         <div class="panel" data-panel="carte"></div>
         <p class="pay__note">En cliquant sur « Terminer mon don », vous recevez par e-mail un récapitulatif avec toutes les informations pour payer, maintenant ou plus tard.</p>
         <div class="step__actions">

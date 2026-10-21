@@ -47,14 +47,15 @@ ctx.installer();
 assert(sheets.Dons && sheets.Messages && sheets["Tableau de bord"], "onglets créés");
 assert.deepStrictEqual(triggers, ["surModification"], "déclencheur installé");
 // 2) un don anonyme + un don avec nom
-assert(post({ kind: "don", montant: 100, type: "Particulier", prenom: "Léa", nom: "Exemple", email: "lea@example.com", reference: "Don Svalbard 2027 – Léa Exemple", nomPublic: "non", methode: "TWINT" }).ok);
+assert(post({ kind: "don", montant: 100, type: "Particulier", prenom: "Léa", nom: "Exemple", email: "lea@example.com", reference: "Don Svalbard 2027 – Léa Exemple", nomPublic: "non", methode: "virement bancaire" }).ok);
 assert(post({ kind: "don", montant: 250, type: "Entreprise", prenom: "Marc", nom: "Test", organisation: "=HACK()", email: "marc@example.com", reference: "Don Svalbard 2027 – Marc Test", nomPublic: "oui" }).ok);
 assert.strictEqual(sheets.Dons.rows.length, 3, "2 dons enregistrés");
-assert.strictEqual(sheets.Dons.rows[1][13], "TWINT", "moyen de paiement enregistré");
-assert(/\(TWINT\)/.test(mails[0].subject), "moyen dans le sujet équipe");
+assert.strictEqual(sheets.Dons.rows[1][13], "virement bancaire", "moyen de paiement enregistré");
+assert(/\(virement bancaire\)/.test(mails[0].subject), "moyen dans le sujet équipe");
+assert(!/twint/i.test(mails.map((m) => m.subject + m.body).join(" ")), "plus aucune mention de TWINT dans les e-mails");
 assert.strictEqual(sheets.Dons.rows[2][5], "'=HACK()", "formule neutralisée");
 assert.strictEqual(mails.length, 4, "2 mails équipe + 2 mails donateurs");
-assert(mails[1].to === "lea@example.com" && /compte est en cours d'ouverture/.test(mails[1].body), "confirmation donateur");
+assert(mails[1].to === "lea@example.com" && /IBAN : CH35 8080 8008 9065 6285 1/.test(mails[1].body) && /Communication : Don Svalbard 2027 – Léa Exemple/.test(mails[1].body) && /Montant : CHF 100/.test(mails[1].body), "confirmation donateur avec IBAN, montant et communication");
 // 3) GET avant paiement : rien de payé
 let g = JSON.parse(ctx.doGet().s); assert.strictEqual(g.raised, 0); assert.deepStrictEqual(g.names, []);
 // 4) on coche « Payé ? » pour les deux → mails de merci, date, colonne Merci

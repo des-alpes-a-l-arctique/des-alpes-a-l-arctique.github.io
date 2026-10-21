@@ -15,9 +15,9 @@ equipe.html         L'équipe : élèves, encadrement, association
 soutenir.html       Nous soutenir : objectif, dons, partenariats, livre, questions
 credits.html        Crédits photos (obligatoires pour les photos sous licence libre)
 css/style.css       le style
-js/config.js        ⚙️ LES RÉGLAGES : e-mail, IBAN, TWINT, formulaires
+js/config.js        ⚙️ LES RÉGLAGES : e-mail, IBAN, QR-facture, formulaires
 js/layout.js        en-tête, menu, pied de page et fenêtres (contact, partenaire, livre, don), communs à toutes les pages
-js/pay.js           fenêtre de don : TWINT, virement (carte en option)
+js/pay.js           fenêtre de don : virement + QR-facture (carte en option)
 js/globe.js         le globe du trajet (canvas : train → avions, puis loupe sur le bateau)
 js/main.js          animations et formulaires
 assets/img/         photos (© Daniel Rohrbasser + Wikimedia Commons, voir credits.html)
@@ -29,19 +29,18 @@ apps-script/test.js test hors ligne de Code.gs
 ## Ce qu'il reste à faire avant de publier
 
 1. **Brancher Google Sheets** (10 minutes, une seule fois, voir plus bas) → `formEndpoint` dans `js/config.js`.
-2. Quand le compte bancaire existe : `iban` et `bank` dans `js/config.js` **et** `IBAN` dans `apps-script/Code.gs` (pour l'e-mail de confirmation).
-3. Quand l'association est inscrite chez TWINT : `twintLink` dans `js/config.js` **et** `LIEN_TWINT` dans `apps-script/Code.gs`.
-4. Faire relire par Daniel les textes, les légendes et les faits de la page « Le Svalbard ».
-5. Vérifier que toute l'équipe est d'accord pour que les noms soient publics. Il n'y a volontairement **aucune photo de groupe** sur le site.
+2. ✅ Compte bancaire (fait le 2026-10-21) : `iban` et `accountHolder` dans `js/config.js` **et** `IBAN`/`TITULAIRE` dans `apps-script/Code.gs` (pour l'e-mail de confirmation) ; QR-facture de la banque dans `assets/img/qr-facture.png` (réglage `qrBill`). Après toute modification de `Code.gs` : *Déployer → Gérer les déploiements → Nouvelle version*. TWINT n'existe plus : il a été retiré du site et du script.
+3. Faire relire par Daniel les textes, les légendes et les faits de la page « Le Svalbard ».
+4. Vérifier que toute l'équipe est d'accord pour que les noms soient publics. Il n'y a volontairement **aucune photo de groupe** sur le site.
 
 Facultatif : `cardLink` (paiement par carte ou Apple Pay via Payrexx ou Stripe). Un onglet « Carte » apparaît alors tout seul.
 
 ## Comment marchent les dons (de A à Z)
 
 1. Le donateur clique sur « Faire un don » (en haut de chaque page), choisit un montant, donne son nom et son e-mail, et choisit si son don apparaît **anonymement** (par défaut) ou **avec son prénom**.
-2. **Automatique** : une ligne s'ajoute dans l'onglet « Dons » de la feuille Google Sheets, l'équipe reçoit un e-mail « Nouveau don annoncé », et le donateur reçoit un e-mail de confirmation avec le lien TWINT et l'IBAN.
-3. Le donateur paie, sans quitter la fenêtre : **TWINT** (bouton, ou QR code sur ordinateur) ou **virement** (IBAN, montant et communication, chacun avec un bouton Copier).
-4. **À faire par l'équipe** : quand l'argent arrive (dans l'app TWINT ou sur le relevé bancaire, grâce à la communication `Don Svalbard 2027 – Prénom Nom`), mettre **Payé ?** sur « oui » dans la feuille.
+2. **Automatique** : une ligne s'ajoute dans l'onglet « Dons » de la feuille Google Sheets, l'équipe reçoit un e-mail « Nouveau don annoncé », et le donateur reçoit un e-mail de confirmation avec l'IBAN, le montant et la communication.
+3. Le donateur paie, sans quitter la fenêtre : **virement bancaire** (IBAN, bénéficiaire, montant et communication, chacun avec un bouton Copier, plus le QR-facture de la banque sur ordinateur).
+4. **À faire par l'équipe** : quand l'argent arrive (sur le relevé bancaire, grâce à la communication `Don Svalbard 2027 – Prénom Nom`), mettre **Payé ?** sur « oui » dans la feuille.
 5. **Automatique** : le donateur reçoit un e-mail « Paiement bien reçu, merci ». L'onglet « Tableau de bord » recalcule le total, et la **jauge du site se met à jour toute seule**. Les prénoms des donateurs « avec mon nom » apparaissent sur la page Nous soutenir ; les anonymes, jamais.
 6. Les recettes hors site (ventes de gâteaux, dons en main propre…) s'ajoutent dans la case jaune du « Tableau de bord ». Elles comptent aussi dans la jauge.
 

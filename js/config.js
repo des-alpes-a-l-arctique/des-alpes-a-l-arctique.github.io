@@ -12,11 +12,11 @@ window.SITE_CONFIG = {
 
   // ---- Paiement des dons -------------------------------------------------
   // Compte bancaire de l'association (pour le virement)
-  iban: "",                 // ex. "CH12 3456 7890 1234 5678 9"
-  bank: "",                 // ex. "Banque Cantonale de Fribourg"
-  accountHolder: "Association Des Alpes à l'Arctique", // titulaire du compte
-  // Lien de paiement TWINT (twint.ch → Clubs & associations → « lien de paiement »)
-  twintLink: "",
+  iban: "CH35 8080 8008 9065 6285 1",
+  bank: "",                 // facultatif : nom de la banque, affiché sous les coordonnées
+  accountHolder: "Association d'étudiants Des Alpes à l'Arctique", // titulaire du compte
+  // QR-facture fourni par la banque (image affichée sur ordinateur, à scanner avec l'app de sa banque)
+  qrBill: "assets/img/qr-facture.png",
   // Facultatif : lien de paiement par carte / Apple Pay (Payrexx, Stripe…)
   cardLink: "",
 
