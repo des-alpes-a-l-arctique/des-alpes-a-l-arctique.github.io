@@ -25,7 +25,7 @@
   const header = `
   <header class="nav">
     <a href="index.html" class="nav__brand" aria-label="Accueil — Des Alpes à l'Arctique">
-      <img src="assets/img/logo-blanc.png" alt="">
+      <img src="assets/img/logo-blanc.png?v=2" alt="">
       <span>Des Alpes<br><em>à l'Arctique</em></span>
     </a>
     <nav class="nav__links" aria-label="Navigation principale">${nav}</nav>
@@ -47,7 +47,7 @@
   <footer class="footer">
     <a href="soutenir.html" class="footer__big">Rejoignez<br><em>l'aventure</em> <span class="arrow">↗</span></a>
     <div class="footer__grid">
-      <img class="footer__logo" src="assets/img/logo-encre.png" alt="Logo Des Alpes à l'Arctique">
+      <img class="footer__logo" src="assets/img/logo-encre.png?v=2" alt="Logo Des Alpes à l'Arctique">
       <div><p class="mono">Association</p><p>Des Alpes à l'Arctique<br>Collège du Sud, Bulle</p></div>
       <div><p class="mono">Contact</p><p><button class="link" data-open="contact">${email}</button></p></div>
       <div><p class="mono">Pages</p><p>${links.map(([h, , l]) => `<a href="${h}">${l}</a>`).join("<br>")}</p></div>
