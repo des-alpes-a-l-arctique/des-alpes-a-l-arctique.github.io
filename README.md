@@ -37,14 +37,15 @@ Facultatif : `cardLink` (paiement par carte ou Apple Pay via Payrexx ou Stripe).
 
 ## Comment marchent les dons (de A à Z)
 
-1. Le donateur clique sur « Faire un don » (en haut de chaque page), choisit un montant, donne son nom et son e-mail, et choisit si son don apparaît **anonymement** (par défaut) ou **avec son prénom**.
-2. **Automatique** : une ligne s'ajoute dans l'onglet « Dons » de la feuille Google Sheets, l'équipe reçoit un e-mail « Nouveau don annoncé », et le donateur reçoit un e-mail de confirmation avec l'IBAN, le montant et la communication.
-3. Le donateur paie, sans quitter la fenêtre : **virement bancaire** (IBAN, bénéficiaire, montant et communication, chacun avec un bouton Copier, plus le QR-facture de la banque sur ordinateur).
-4. **À faire par l'équipe** : quand l'argent arrive (sur le relevé bancaire, grâce à la communication `Don Svalbard 2027 – Prénom Nom`), mettre **Payé ?** sur « oui » dans la feuille.
-5. **Automatique** : le donateur reçoit un e-mail « Paiement bien reçu, merci ». L'onglet « Tableau de bord » recalcule le total, et la **jauge du site se met à jour toute seule**. Les prénoms des donateurs « avec mon nom » apparaissent sur la page Nous soutenir ; les anonymes, jamais.
-6. Les recettes hors site (ventes de gâteaux, dons en main propre…) s'ajoutent dans la case jaune du « Tableau de bord ». Elles comptent aussi dans la jauge.
+Version simplifiée le 2026-10-21 : plus de script de dons ni d'e-mails aux donateurs.
 
-Le site ne peut pas savoir tout seul qu'un virement est arrivé : aucune banque ne le permet gratuitement. C'est pour ça qu'il y a la case « Payé ? ». C'est la seule action manuelle.
+1. Le donateur clique sur « Faire un don » (en haut de chaque page), choisit un montant, donne son nom et son e-mail.
+2. Il voit les coordonnées de virement (IBAN, bénéficiaire, montant, communication, chacun avec un bouton Copier) et le **QR-facture de la banque** (à scanner sur ordinateur, à enregistrer puis importer dans l'app de la banque sur téléphone).
+3. Quand il a fait son virement, il clique sur « J'ai fait mon virement » : **l'équipe reçoit un e-mail** `[Site] Contact — DON CHF X – Prénom Nom` (envoyé par le formulaire « contact » du script existant, avec l'e-mail du donateur en « répondre à »). Ça apparaît aussi dans l'onglet « Messages » de la feuille Google Sheets.
+4. **À faire par l'équipe** : vérifier l'arrivée de l'argent sur le relevé bancaire (communication `Don Svalbard 2027 – Prénom Nom`) et remercier le donateur en répondant à l'e-mail.
+5. La jauge de la page se lit dans la case jaune « Autres recettes » du « Tableau de bord » de la feuille : y écrire le total réuni pour la mettre à jour à la main.
+
+Le code des dons « complets » (onglet « Dons », e-mails de confirmation, « Payé ? ») reste dans `apps-script/Code.gs` mais le site ne l'utilise plus.
 
 ## Brancher les formulaires (Google Sheets)
 

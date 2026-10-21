@@ -539,7 +539,8 @@ sup.ast { color: var(--accent); font-family: var(--sans); font-style: normal; fo
 .panel.is-on { display: block; animation: rise .5s var(--ease-out); }
 .pay__qrbill { display: grid; grid-template-columns: auto 1fr; gap: 20px; align-items: center; margin-top: 18px; }
 .pay__qrbill img { width: 150px; height: 150px; padding: 8px; background: #fff; border-radius: 12px; display: block; }
-.pay__qrbill p { margin: 0; font-size: 13px; color: var(--mist); }
+.pay__qrbill p { margin: 0 0 12px; font-size: 13px; color: var(--mist); }
+.pay__dl { padding: 10px 18px; font-size: 14px; }
 .pay__qrbill b { color: var(--ice); }
 .pay__qr { width: 190px; padding: 8px; background: #fff; border-radius: 12px; }
 .pay__qr .qr { width: 100%; height: auto; display: block; }

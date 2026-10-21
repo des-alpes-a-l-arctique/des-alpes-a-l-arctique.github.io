@@ -30,7 +30,7 @@ window.SvalbardPay = (() => {
     const msg = `Don Svalbard 2027 – ${d.prenom} ${d.nom}`;
     // Virement bancaire (+ QR-facture de la banque, à scanner depuis un autre appareil que celui qui affiche la page)
     $('[data-panel="virement"]', form).innerHTML = CFG.iban
-      ? `<div class="copyrows">${copyRow("IBAN", CFG.iban)}${copyRow("Bénéficiaire", CFG.accountHolder || "Association d'étudiants Des Alpes à l'Arctique")}${copyRow("Montant", "CHF " + Number(d.montant).toFixed(2))}${copyRow("Communication", msg)}</div>${CFG.bank ? `<p class="pay__hint">${esc(CFG.bank)}</p>` : ""}${CFG.qrBill && !isPhone() ? `<div class="pay__qrbill"><img src="${esc(CFG.qrBill)}" alt="QR-facture de la banque" width="150" height="150"><p>Ou scannez ce code avec l'application de votre banque. Il contient l'IBAN et le bénéficiaire ; pensez à indiquer le montant de <b>CHF ${fmt(d.montant)}</b> et la communication ci-dessus.</p></div>` : ""}`
+      ? `<div class="copyrows">${copyRow("IBAN", CFG.iban)}${copyRow("Bénéficiaire", CFG.accountHolder || "Association d'étudiants Des Alpes à l'Arctique")}${copyRow("Montant", "CHF " + Number(d.montant).toFixed(2))}${copyRow("Communication", msg)}</div>${CFG.bank ? `<p class="pay__hint">${esc(CFG.bank)}</p>` : ""}${CFG.qrBill ? `<div class="pay__qrbill"><img src="${esc(CFG.qrBill)}" alt="QR-facture de la banque" width="150" height="150"><div><p>${isPhone() ? "Sur téléphone : enregistrez ce QR-code (bouton ci-dessous), puis importez-le depuis la galerie dans l'application de votre banque (« Payer », « scanner un QR-facture »)." : "Ou scannez ce code avec l'application de votre banque."} Il contient l'IBAN et le bénéficiaire ; indiquez le montant de <b>CHF ${fmt(d.montant)}</b>.</p><a class="btn btn--line pay__dl" href="${esc(CFG.qrBill)}" download="qr-facture-des-alpes-a-l-arctique.png"><span>Enregistrer le QR-code</span></a></div></div>` : ""}`
       : soon("Le virement");
     // Carte (facultatif)
     const cardTab = $('[data-tab="carte"]', form);
@@ -87,7 +87,6 @@ window.SvalbardPay = (() => {
       don = {
         montant: amount(), type: form.type.value, prenom: form.prenom.value.trim(), nom: form.nom.value.trim(),
         organisation: form.organisation.value.trim(), email: form.email.value.trim(), message: form.message.value.trim(),
-        nomPublic: form.affichage.value === "nom" ? "oui" : "non",
       };
       don.reference = `Don Svalbard 2027 – ${don.prenom} ${don.nom}`;
       $("[data-thanks-name]", form).textContent = don.prenom;
@@ -102,7 +101,9 @@ window.SvalbardPay = (() => {
       const methode = { virement: "virement bancaire", carte: "carte" }[tab.dataset.tab] || tab.textContent;
       const status = $('[data-step="3"] .form__status', form);
       const btn = $("[data-finish]", form); btn.disabled = true; status.textContent = "";
-      const err = await send("don", { ...don, methode }).then(() => null, (e) => e.message);
+      // pas de script de dons : l'équipe reçoit un e-mail de notification (formulaire « contact »)
+      const msg = `Don annoncé : CHF ${don.montant} par ${methode}\nType : ${don.type}${don.organisation ? " (" + don.organisation + ")" : ""}\nCommunication de virement : ${don.reference}\nMessage : ${don.message || "—"}\n\nÀ remercier dès que l'argent est arrivé sur le compte.`;
+      const err = await send("contact", { nom: `DON CHF ${don.montant} – ${don.prenom} ${don.nom}`, email: don.email, organisation: don.organisation, sujet: "Don annoncé", message: msg }).then(() => null, (e) => e.message);
       btn.disabled = false;
       if (err) {
         status.innerHTML = err === "limite" ? `Trop d'envois depuis cette adresse. Réessayez dans une heure, ou écrivez-nous à <b>${esc(CFG.email)}</b>.`
@@ -114,21 +115,7 @@ window.SvalbardPay = (() => {
       $("[data-done-amount]", form).textContent = "CHF " + fmt(don.montant);
       $("[data-done-method]", form).textContent = methode;
       $("[data-done-email]", form).textContent = don.email;
-      $(".done__status", form).textContent = ""; $("[data-resend]", form).disabled = false;
       go(4);
-    });
-    // étape 4 : renvoyer l'e-mail récapitulatif (sans créer de nouveau don)
-    $("[data-resend]", form).addEventListener("click", async () => {
-      if (!don) return;
-      const btn = $("[data-resend]", form), status = $(".done__status", form);
-      btn.disabled = true; status.className = "form__status done__status"; status.textContent = "Envoi…";
-      const err = await send("renvoi", { email: don.email, reference: don.reference }).then(() => null, (e) => e.message);
-      if (err) {
-        status.textContent = err === "limite" ? "Trop d'envois pour cette adresse : réessayez dans une heure." : "Le renvoi n'a pas fonctionné. Écrivez-nous à " + CFG.email + ".";
-        btn.disabled = false; return;
-      }
-      status.classList.add("is-ok"); status.textContent = "E-mail renvoyé à " + don.email + " ✓";
-      setTimeout(() => (btn.disabled = false), 30000); // pas plus d'un renvoi toutes les 30 secondes
     });
     dialog.addEventListener("close", () => { if ($('[data-step="4"]', form).classList.contains("is-on")) { form.reset(); don = null; amountField.hidden = true; org.hidden = true; go(1); } });
   }

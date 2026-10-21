@@ -155,14 +155,9 @@
           ${field("prenom", "Prénom *", 'required autocomplete="given-name"')}
           ${field("nom", "Nom *", 'required autocomplete="family-name"')}
           <label class="field field--wide" data-org hidden><span>Entreprise / association</span><input name="organisation" autocomplete="organization"></label>
-          ${field("email", "E-mail * (pour votre confirmation)", 'type="email" required autocomplete="email"', true)}
+          ${field("email", "E-mail * (pour que nous puissions vous remercier)", 'type="email" required autocomplete="email"', true)}
           ${area("message", "Un mot pour l'équipe ? (facultatif)")}
         </div>
-        <fieldset class="checks">
-          <legend>Sur notre site, votre don apparaît…</legend>
-          <label class="pill"><input type="radio" name="affichage" value="anonyme" checked><span>De façon anonyme</span></label>
-          <label class="pill"><input type="radio" name="affichage" value="nom"><span>Avec mon nom</span></label>
-        </fieldset>
         ${hp}
         <p class="privacy">Votre nom et votre e-mail ne sont vus que par l'équipe, pour vous remercier et suivre les dons. Ils ne sont jamais partagés.</p>
         <div class="step__actions">
@@ -181,23 +176,21 @@
         </div>
         <div class="panel is-on" data-panel="virement"></div>
         <div class="panel" data-panel="carte"></div>
-        <p class="pay__note">En cliquant sur « Terminer mon don », vous recevez par e-mail un récapitulatif avec toutes les informations pour payer, maintenant ou plus tard.</p>
+        <p class="pay__note">Faites votre virement avec les coordonnées ci-dessus, puis cliquez sur « J'ai fait mon virement » : nous sommes prévenus par e-mail et nous pourrons vous remercier.</p>
         <div class="step__actions">
           <button type="button" class="btn btn--ghost" data-prev><span>Modifier</span></button>
-          <button type="button" class="btn btn--accent" data-finish><span>Terminer mon don</span></button>
+          <button type="button" class="btn btn--accent" data-finish><span>J'ai fait mon virement</span></button>
         </div>
         <p class="form__status" role="status"></p>
       </fieldset>
 
       <fieldset class="step step--done" data-step="4">
-        <legend class="sr">Don enregistré</legend>
+        <legend class="sr">Don annoncé</legend>
         <span class="modal__check">✓</span>
         <h3>Merci <span data-done-name></span>&nbsp;!</h3>
-        <p>Votre don de <b data-done-amount></b> par <b data-done-method></b> est bien enregistré.</p>
-        <p class="done__mail">📩 Nous vous avons envoyé un e-mail à <b data-done-email></b> avec toutes les informations pour finaliser votre don.</p>
-        <p class="done__hint">Vous ne le voyez pas d'ici quelques minutes&nbsp;? Regardez dans vos <b>courriers indésirables</b>. S'il s'y trouve, cliquez sur « Ce n'est pas un spam » : nos prochains e-mails arriveront directement.</p>
+        <p>Nous avons bien noté votre don de <b data-done-amount></b> par <b data-done-method></b>.</p>
+        <p class="done__mail">Dès que votre virement nous parvient, nous vous écrivons un mot de remerciement à <b data-done-email></b>.</p>
         <div class="done__actions">
-          <button type="button" class="btn btn--ghost" data-resend><span>Renvoyer l'e-mail</span></button>
           <button type="button" class="btn btn--accent" data-close><span>Fermer</span></button>
         </div>
         <p class="form__status done__status" role="status"></p>
